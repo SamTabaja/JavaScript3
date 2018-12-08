@@ -1,7 +1,7 @@
 'use strict';
 
 {
-
+  let repoName = [];
 
   function fetchJSON(url) {
     return new Promise(function (resolve, reject) {
@@ -34,15 +34,6 @@
     return elem;
   }
 
-  let repoName = [];
-
-  function fillArrays(data) {
-    for (let i = 0; i < data.length; i++) {
-      repoName.push(data[i].name);
-    }
-  }
-
-  // selectOptions(repoName)
   function selectOptions(name) {
     let select = document.getElementById("select");
     for (let i = 0; i < name.length; i++) {
@@ -54,10 +45,12 @@
   }
 
   function buildHTML() {
-    const top = createAndAppend("div", root, { id: "top" });
-    const left = createAndAppend("div", root, { id: "left" });
-    const right = createAndAppend("div", root, { id: "right" });
-  
+    createAndAppend("div", root, { id: "top" });
+    createAndAppend("div", root, { id: "left" });
+    createAndAppend("div", root, { id: "right" });
+    const top = document.getElementById('top');
+    const left = document.getElementById('left');
+    let right = document.getElementById('right');
     //right elements
     createAndAppend("h5", right, { text: "Contributions", "class": "rightTitle" });
     // top elements
@@ -82,6 +75,11 @@
 
   }
 
+  function fillArrays(data) {
+    for (let i = 0; i < data.length; i++) {
+      repoName.push(data[i].name);
+    }
+  }
 
   function selectOnChange(data) {
     select.addEventListener("change", function (e) {
@@ -102,12 +100,12 @@
     right.innerHTML = "";
     createAndAppend("h5", right, { text: "Contributions", "class": "rightTitle" });
     let ul = createAndAppend("ul", right, { "class": "ul" });
-
     fetchJSON(data.contributors_url)
-      .then(contributors =>  {
+      .then(contributors => {
         contributors.forEach(c => {
 
           let li = createAndAppend("li", ul, { "class": "li" });
+
           createAndAppend("img", li, { "class": "avatar", "src": c.avatar_url });
 
           let login = createAndAppend("div", li, { id: "login", "class": "liDivs" });
@@ -123,18 +121,19 @@
       })
   }
 
-  function main(url) {
-    fetchJSON(url)
-      .then(data => {
-        data.sort((a, b) => a.name.localeCompare(b.name));
-        fillArrays(data);
-        buildHTML()
-        selectOptions(repoName)
-        selectOnChange(data)
-      })
-      .catch(err => {
-        createAndAppend('div', root, { text: err.message, class: 'alert-error' });
-      })
+
+  async function main(url) {
+    try {
+      let data = await fetchJSON(url)
+      data.sort((a, b) => a.name.localeCompare(b.name));
+      fillArrays(data);
+      buildHTML()
+      selectOptions(repoName)
+      selectOnChange(data)
+    }
+    catch (err) {
+      createAndAppend('div', root, { text: err.message, class: 'alert-error' });
+    }
   } //end of main fucntion
 
   const HYF_REPOS_URL = 'https://api.github.com/orgs/HackYourFuture/repos?per_page=100';
