@@ -96,29 +96,29 @@
     updateText.innerHTML = data.updated_at;
   }
 
-  function getContributors(data) {
+  async function getContributors(data) {
     right.innerHTML = "";
     createAndAppend("h5", right, { text: "Contributions", "class": "rightTitle" });
     let ul = createAndAppend("ul", right, { "class": "ul" });
-    fetchJSON(data.contributors_url)
-      .then(contributors => {
-        contributors.forEach(c => {
+    let contributors = await fetchJSON(data.contributors_url)
+    try {
+      contributors.forEach(c => {
 
-          let li = createAndAppend("li", ul, { "class": "li" });
+        let li = createAndAppend("li", ul, { "class": "li" });
 
-          createAndAppend("img", li, { "class": "avatar", "src": c.avatar_url });
+        createAndAppend("img", li, { "class": "avatar", "src": c.avatar_url });
 
-          let login = createAndAppend("div", li, { id: "login", "class": "liDivs" });
-          const a = createAndAppend("a", login, { "target": "_blank", "href": c.html_url, "class": "link" });
-          createAndAppend("h8", a, { text: c.login });
+        let login = createAndAppend("div", li, { id: "login", "class": "liDivs" });
+        const a = createAndAppend("a", login, { "target": "_blank", "href": c.html_url, "class": "link" });
+        createAndAppend("h8", a, { text: c.login });
 
-          let contributionsNumber = createAndAppend("div", li, { id: "contributionsNumber", "class": "liDivs" });
-          createAndAppend("h8", contributionsNumber, { text: c.contributions });
-        });
-      })
-      .catch(err => {
-        createAndAppend("div", right, { html: err.message, "class": "alert-error" });
-      })
+        let contributionsNumber = createAndAppend("div", li, { id: "contributionsNumber", "class": "liDivs" });
+        createAndAppend("h8", contributionsNumber, { text: c.contributions });
+      });
+    }
+    catch (err) {
+      createAndAppend("div", right, { html: err.message, "class": "alert-error" });
+    }
   }
 
 
