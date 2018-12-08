@@ -62,7 +62,7 @@ class Util {
     Util.createAndAppend("h7", left4, { id: "update", text: "Updated: ", class: "headings first" });
     Util.createAndAppend("h7", left4, { id: "updateText", class: "txt first" });
   }
-  
+
   static fillArrays(data) {
     for (let i = 0; i < data.length; i++) {
       repoName.push(data[i].name);
@@ -78,7 +78,7 @@ class Util {
       select.appendChild(option);
     }
   }
-  
+
   static selectOnChange(data) {
     select.addEventListener("change", function (e) {
       const i = e.target.value;
@@ -93,30 +93,30 @@ class Util {
     forkText.innerHTML = data.forks;
     updateText.innerHTML = data.updated_at;
   }
-  
-  static getContributors(data) {
+
+  static async getContributors(data) {
     right.innerHTML = "";
     Util.createAndAppend("h5", right, { text: "Contributions", "class": "rightTitle" });
     let ul = Util.createAndAppend("ul", right, { "class": "ul" });
-    Util.fetchJSON(data.contributors_url)
-      .then(contributors => {
-        contributors.forEach(c => {
+    try {
+      let contributors = await Util.fetchJSON(data.contributors_url)
+      contributors.forEach(c => {
 
-          let li = Util.createAndAppend("li", ul, { "class": "li" });
+        let li = Util.createAndAppend("li", ul, { "class": "li" });
 
-          Util.createAndAppend("img", li, { "class": "avatar", "src": c.avatar_url });
+        Util.createAndAppend("img", li, { "class": "avatar", "src": c.avatar_url });
 
-          let login = Util.createAndAppend("div", li, { id: "login", "class": "liDivs" });
-          const a = Util.createAndAppend("a", login, { "target": "_blank", "href": c.html_url, "class": "link" });
-          Util.createAndAppend("h8", a, { text: c.login });
+        let login = Util.createAndAppend("div", li, { id: "login", "class": "liDivs" });
+        const a = Util.createAndAppend("a", login, { "target": "_blank", "href": c.html_url, "class": "link" });
+        Util.createAndAppend("h8", a, { text: c.login });
 
-          let contributionsNumber = Util.createAndAppend("div", li, { id: "contributionsNumber", "class": "liDivs" });
-          Util.createAndAppend("h8", contributionsNumber, { text: c.contributions });
-        });
-      })
-      .catch(err => {
-        Util.createAndAppend("div", right, { html: err.message, "class": "alert-error" });
-      })
+        let contributionsNumber = Util.createAndAppend("div", li, { id: "contributionsNumber", "class": "liDivs" });
+        Util.createAndAppend("h8", contributionsNumber, { text: c.contributions });
+      });
+    }
+    catch (err) {
+      Util.createAndAppend("div", right, { html: err.message, "class": "alert-error" });
+    }
   }
 
 }
